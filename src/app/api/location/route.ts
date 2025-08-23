@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
 import { fetchGeoDataByIp } from "@services/ipAPI.service";
-import { IP_API_CONFIG, PRIVATE_IP_REGEX } from "@/lib/constants";
+import { IP_API_CONFIG, PRIVATE_IP_REGEX } from "@lib/constants";
 
 const isDev = process.env.NODE_ENV === "development";
 

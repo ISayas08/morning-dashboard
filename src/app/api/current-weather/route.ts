@@ -1,4 +1,4 @@
-import { fetchCurrentWeather } from "@/services/weather.service";
+import { fetchCurrentWeather } from "@services/open-meteo.service";
 
 export const revalidate = 60;
 

@@ -1,0 +1,41 @@
+.quote {
+  text-align: right;
+  padding: 16px 0;
+  position: relative;
+
+  max-width: 600px;
+  margin: 0 auto 0 auto;
+  margin-right: 10%;
+
+  &Section {
+    margin-top: 120px;
+    @media (min-width: 768px) {
+      margin-top: 250px;
+    }
+  }
+
+  &Mark {
+    font-size: 150px;
+    line-height: 0.7;
+    color: var(--accent);
+    font-weight: 700;
+    position: absolute;
+    top: -10px;
+    left: -25px;
+    opacity: 0.3;
+  }
+
+  &Text {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    margin: 0 0 8px 0;
+  }
+
+  &Author {
+    font-size: 14px;
+    color: var(--muted);
+    font-style: italic;
+    margin-right: 5px;
+  }
+}

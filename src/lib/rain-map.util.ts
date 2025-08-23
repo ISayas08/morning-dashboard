@@ -1,4 +1,4 @@
-export type RainCategory = "clear" | "drizzle" | "rain" | "showers" | "storm";
+import { RainCategory } from "./types";
 
 const rainCodeRanges: Array<{
   from: number;

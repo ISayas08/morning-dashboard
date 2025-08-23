@@ -1,4 +1,4 @@
-import { getRainCategory } from "@/lib/rain-map.util";
+import { getRainCategory, isRain } from "@lib/rain-map.util";
 import { WEATHER_CONFIG } from "@lib/constants";
 
 interface FetchCurrentWeatherParams {
@@ -41,6 +41,7 @@ export const fetchCurrentWeather = async (
       isDay: Boolean(currentWeather.is_day),
       unit: resJSON.current_units?.temperature_2m ?? "°C",
       rainCategory: getRainCategory(currentWeather.weather_code as number),
+      isRain: isRain(currentWeather.weather_code as number),
     },
   };
 };

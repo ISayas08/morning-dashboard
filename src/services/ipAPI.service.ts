@@ -1,4 +1,4 @@
-import { IP_API_CONFIG } from "@/lib/constants";
+import { IP_API_CONFIG } from "@lib/constants";
 
 export const fetchGeoDataByIp = async (ip: string) => {
   const ipAPIURL = new URL(`/json/${ip}`, IP_API_CONFIG.url);
