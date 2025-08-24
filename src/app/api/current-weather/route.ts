@@ -17,6 +17,7 @@ export async function GET(req: Request) {
     lon,
     timeZone: timezone,
   });
+
   if (!result.data) return new Response("Internal error", { status: 502 });
 
   return Response.json(result.data, {

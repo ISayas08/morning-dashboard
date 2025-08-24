@@ -42,6 +42,9 @@ export const fetchCurrentWeather = async (
       unit: resJSON.current_units?.temperature_2m ?? "°C",
       rainCategory: getRainCategory(currentWeather.weather_code as number),
       isRain: isRain(currentWeather.weather_code as number),
+      humidity: currentWeather.relative_humidity_2m,
+      pressure: currentWeather.surface_pressure,
+      uvIndex: currentWeather.uv_index,
     },
   };
 };

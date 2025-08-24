@@ -22,6 +22,9 @@ export const WEATHER_CONFIG = {
     "weather_code",
     "wind_speed_10m",
     "is_day",
+    "relative_humidity_2m",
+    "surface_pressure",
+    "uv_index",
   ],
 } as const;
 
