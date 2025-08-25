@@ -1,6 +1,10 @@
 .landmarkPhotos {
   position: relative;
-  padding-top: 100px;
+  padding-top: var(--inter-components-spacing-mobile);
+
+  @media (min-width: 768px) {
+    padding-top: var(--inter-components-spacing-tablet-and-above);
+  }
 
   &Container {
     display: grid;
@@ -22,7 +26,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: color-mix(in srgb, #000 22%, transparent);
+      background: rgba(0, 0, 0, 0.22);
       z-index: 1;
     }
 

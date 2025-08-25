@@ -6,19 +6,20 @@ const NamePromptModal = dynamic(
   () => import("@components/name-prompt-modal/name-prompt-modal"),
   { ssr: false }
 );
+import { MODAL_NAME_KEY } from "@lib/constants";
 import { RainCategory } from "@lib/types";
 
 import styles from "./header.module.scss";
-import { MODAL_NAME_KEY } from "@/lib/constants";
 
 interface HeaderProps {
   city?: string;
-  rainCategory: RainCategory;
+  rainCategory?: RainCategory;
 }
 
 const Header: React.FC<HeaderProps> = ({ city, rainCategory }) => {
   const [name, setName] = React.useState<string | null>(null);
   const [isNameModalOpen, setIsNameModalOpen] = React.useState(true);
+
   const tagline = (() => {
     const cityText = city ? ` in ${city}` : "";
     switch (rainCategory) {
@@ -32,6 +33,8 @@ const Header: React.FC<HeaderProps> = ({ city, rainCategory }) => {
         return `Showers on and off${cityText} — kinda like your Wi-Fi, but wetter!`;
       case "storm":
         return `Stormy${cityText}! How much did you actually want to go outside today?`;
+      default:
+        return "";
     }
   })();
 
@@ -42,6 +45,7 @@ const Header: React.FC<HeaderProps> = ({ city, rainCategory }) => {
     } catch (error) {
       name = null;
     }
+
     if (name) {
       setName(name);
       setIsNameModalOpen(false);

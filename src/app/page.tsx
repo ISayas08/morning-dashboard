@@ -14,9 +14,6 @@ import {
 } from "@lib/types";
 import styles from "./page.module.scss";
 
-const api = async (path: string) =>
-  fetch(new URL(path, BASE_URL), { cache: "no-store" });
-
 export const revalidate = 0;
 
 export default async function Home() {
@@ -33,19 +30,13 @@ export default async function Home() {
     throw new Error("Failed to load location!");
   }
 
-  const { data: weather } = await apiRouteFetch<OpenMeteoServiceResponse>(
-    new URL(
-      `/api/current-weather?lat=${location.lat}&lon=${location.lon}&timezone=${location.timezone}`,
-      BASE_URL
-    )
-  );
-
-  console.log({ weather });
-
-  if (!weather) {
-    // Forcing error boundary to appear
-    throw new Error("Failed to load weather!");
-  }
+  const { data: initialWeather } =
+    await apiRouteFetch<OpenMeteoServiceResponse>(
+      new URL(
+        `/api/current-weather?lat=${location.lat}&lon=${location.lon}&timezone=${location.timezone}`,
+        BASE_URL
+      )
+    );
 
   const { data: landmarkPhotos } = await apiRouteFetch<LandMarkPhoto[]>(
     new URL(`/api/landmark-photo?cityName=${location.city}`, BASE_URL)
@@ -53,22 +44,22 @@ export default async function Home() {
 
   return (
     <main className={styles.shell}>
-      {<Header city={location?.city} rainCategory={weather?.rainCategory} />}
+      {
+        <Header
+          city={location?.city}
+          rainCategory={initialWeather?.rainCategory}
+        />
+      }
 
       <LandmarkPhotos landmarkPhotos={landmarkPhotos} />
 
       <WeatherCard
+        cityName={location.city}
         isRenderingPhotos={!!landmarkPhotos?.length}
-        temp={weather.temp}
-        feelsLike={weather.feelsLike}
-        windKph={weather.windKph}
-        isDay={weather.isDay}
-        unit="°C"
-        rainCategory={weather.rainCategory}
-        city={location.city}
-        humidity={weather.humidity}
-        pressure={weather.pressure}
-        uvIndex={weather.uvIndex}
+        lat={location.lat}
+        lon={location.lon}
+        timezone={location.timezone}
+        weatherInitialData={initialWeather}
       />
 
       {quote && <Quote text={quote.content} author={quote.author} />}

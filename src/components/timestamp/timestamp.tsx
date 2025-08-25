@@ -12,14 +12,15 @@ const Timestamp: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Fallback for SSR
   if (!now) {
     return (
       <div className={styles.timestamp} aria-hidden="true">
-        <div className={styles.weekday}>—</div>
-        <div className={styles.dateLine}>
-          <span className={styles.dateText}>— —, —</span>
-          <span className={styles.sep}> — </span>
-          <time className={styles.clock}>—:—:—</time>
+        <div className={styles.timestampWeekday}>—</div>
+        <div className={styles.timestampDateLine}>
+          <span className={styles.timestampDateText}>— —, —</span>
+          <span className={styles.timestampSeparator}> — </span>
+          <time className={styles.timestampClock}>—:—:—</time>
         </div>
       </div>
     );
@@ -42,17 +43,13 @@ const Timestamp: React.FC = () => {
 
   return (
     <div className={styles.timestamp}>
-      <div className={styles.weekday}>{weekday}</div>
-      <div className={styles.dateLine}>
-        <span className={styles.dateText}>
+      <div className={styles.timestampWeekday}>{weekday}</div>
+      <div className={styles.timestampDateLine}>
+        <span className={styles.timestampDateText}>
           {monthName} {day}, {year}
         </span>
-        <span className={styles.sep}> — </span>
-        <time
-          className={styles.clock}
-          dateTime={now.toISOString()}
-          suppressHydrationWarning
-        >
+        <span className={styles.timestampSeparator}> — </span>
+        <time className={styles.timestampClock} dateTime={now.toISOString()}>
           {time}
         </time>
       </div>

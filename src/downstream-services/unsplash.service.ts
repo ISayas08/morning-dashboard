@@ -53,7 +53,7 @@ export const fetchRandomLandmarkByCityName = async (cityName: string) => {
 
   return apiRouteFetch<UnsplashResponsePhoto[], LandMarkPhoto[] | null>(
     unsplashURL,
-    null,
+    { cache: "no-store" },
     unsplashMapper
   );
 };

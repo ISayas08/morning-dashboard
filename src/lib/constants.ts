@@ -35,7 +35,7 @@ export const UNSPLASH_CONFIG = {
   url: "https://api.unsplash.com",
   defaultPhotosPerPage: "3",
   defaultOrientation: "portrait",
-};
+} as const;
 
 export const BASE_URL =
   process.env.BASE_URL ??
