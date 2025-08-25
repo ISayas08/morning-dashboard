@@ -9,7 +9,8 @@ export async function GET() {
   const h = await headers();
   const ip = isDev
     ? IP_API_CONFIG.defaultIP
-    : h.get("x-forwarded-for")?.split(",")[0].trim() ||
+    : h.get("x-client-ip") ||
+      h.get("x-forwarded-for")?.split(",")[0].trim() ||
       h.get("x-real-ip") ||
       "";
 

@@ -1,4 +1,6 @@
-import { BASE_URL } from "@lib/constants";
+import { headers } from "next/headers";
+
+import { BASE_URL, IP_API_CONFIG } from "@lib/constants";
 import apiRouteFetch from "@lib/fetch-util";
 
 import Header from "@components/header/header";
@@ -7,12 +9,12 @@ import LandmarkPhotos from "@components/landmark-photos/landmark-photos";
 import WeatherCard from "@components/weather-card/weather-card";
 
 import {
-  IPAPIResponse,
   LandMarkPhoto,
   OpenMeteoServiceResponse,
   QuotableResponse,
 } from "@lib/types";
 import styles from "./page.module.scss";
+import { fetchGeoDataByIp } from "@/downstream-services/ipAPI.service";
 
 export const revalidate = 0;
 
@@ -21,22 +23,23 @@ export default async function Home() {
     new URL("/api/quote", BASE_URL)
   );
 
-  const lres = await apiRouteFetch<IPAPIResponse>(
-    new URL("/api/location", BASE_URL)
-  );
+  const h = await headers();
+  const ip =
+    process.env.NODE_ENV === "development"
+      ? IP_API_CONFIG.defaultIP
+      : h.get("x-client-ip") ||
+        h.get("x-forwarded-for")?.split(",")[0].trim() ||
+        h.get("x-real-ip") ||
+        "";
 
-  console.error(lres);
+  // Note: There is an API route for IP lookup, but calling it from the server resolves the IP as Vercel's server IP, not the user's actual IP.
+  const ipAPIRes = await fetchGeoDataByIp(ip);
+  const { data: location } = ipAPIRes;
 
-  const { data: location } = lres;
-
-  if (!location) {
-    // Forcing error boundary to appear
-    throw new Error(
-      "Failed to load location! | " +
-        JSON.stringify(lres, null, 2) +
-        " | " +
-        JSON.stringify(location, null, 2)
-    );
+  if (("isErrored" in ipAPIRes && ipAPIRes.isErrored) || !location) {
+    // log to monitoring tool (Sentry, Datadog, Splunk, etc) out of scope.
+    console.log({ ipAPIRes });
+    throw new Error("Failed to load location!");
   }
 
   const { data: initialWeather } =
