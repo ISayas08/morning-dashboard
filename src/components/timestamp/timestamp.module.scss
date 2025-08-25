@@ -6,32 +6,32 @@
   text-align: center;
   width: 100%;
   margin: 0 auto;
-}
 
-.weekday {
-  font-size: clamp(80px, 15vw, 180px);
-  font-weight: 300;
-  letter-spacing: clamp(0px, 1vw, 15px);
-  line-height: 1.1;
-  color: var(--surface-2);
-  text-shadow: var(--shadow-soft);
-}
+  &Weekday {
+    font-size: clamp(80px, 15vw, 180px);
+    font-weight: 300;
+    letter-spacing: clamp(0px, 1vw, 15px);
+    line-height: 1.1;
+    color: var(--tertiary);
+    text-shadow: var(--shadow-soft);
+  }
 
-.dateLine {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  font-size: clamp(18px, 2vw, 28px);
-  color: var(--muted);
-}
+  &DateLine {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: clamp(18px, 2vw, 28px);
+    color: var(--muted);
+  }
 
-.sep {
-  opacity: 0.5;
-}
+  &Separator {
+    opacity: 0.5;
+  }
 
-.clock {
-  color: var(--text);
-  font-weight: 600;
+  &Clock {
+    color: var(--text);
+    font-weight: 600;
+  }
 }

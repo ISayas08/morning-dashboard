@@ -9,7 +9,13 @@ const LandmarkPhotos: React.FC<{
 }> = ({ landmarkPhotos }) => {
   const showPhotos = landmarkPhotos?.length;
   return (
-    <section className={styles.landmarkPhotos}>
+    <section
+      aria-labelledby="landmark-photos-title"
+      className={styles.landmarkPhotos}
+    >
+      <h2 id="landmark-photos-title" className="sr-only">
+        Landmark photos based on your location
+      </h2>
       {showPhotos && (
         <div className={styles.landmarkPhotosContainer}>
           {landmarkPhotos.map(({ id, urlRegular, urlSmall, alt }) => (

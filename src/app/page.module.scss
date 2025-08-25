@@ -1,5 +1,10 @@
 .shell {
   max-width: 1200px;
-  margin: 0 auto 120px;
-  padding: 0 28px 20px;
+  margin: 0 auto var(--inter-components-spacing-mobile);
+  padding: 0 20px 20px;
+
+  @media (min-width: 768px) {
+    padding: 0 28px 20px;
+    margin: 0 auto var(--inter-components-spacing-tablet-and-above);
+  }
 }

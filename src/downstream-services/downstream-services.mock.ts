@@ -4,7 +4,7 @@ export const quotable_service_response_mock = {
   data: {
     _id: "yvGg7FErS-y",
     content:
-      "I used to be and adventurer like you. Then I took an arrow to the knee",
+      "I used to be an adventurer like you, then I took an arrow to the knee.",
     author: "Ex-adventurer",
     tags: ["Famous Quotes", "Wisdom"],
     authorSlug: "mockAuthor",

@@ -26,31 +26,6 @@ const NamePromptModal = ({ open, onClose, onSubmit }: Props) => {
     };
   }, [open]);
 
-  // useEffect(() => {
-  //   if (!open) return;
-  //   const handler = (e: KeyboardEvent) => {
-  //     if (e.key === "Escape") onClose();
-  //     if (e.key !== "Tab" || !dialogRef.current) return;
-  //     const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-  //       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  //     );
-  //     if (focusables.length === 0) return;
-  //     const first = focusables[0];
-  //     const last = focusables[focusables.length - 1];
-  //     const active = document.activeElement as HTMLElement | null;
-
-  //     if (e.shiftKey && active === first) {
-  //       last.focus();
-  //       e.preventDefault();
-  //     } else if (!e.shiftKey && active === last) {
-  //       first.focus();
-  //       e.preventDefault();
-  //     }
-  //   };
-  //   document.addEventListener("keydown", handler);
-  //   return () => document.removeEventListener("keydown", handler);
-  // }, [open, onClose]);
-
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(name.trim());
@@ -86,7 +61,7 @@ const NamePromptModal = ({ open, onClose, onSubmit }: Props) => {
         </h2>
 
         <form onSubmit={submit} className={styles.form}>
-          <label htmlFor="name" className={styles.label}>
+          <label htmlFor="name" className="sr-only">
             Your name
           </label>
           <input
@@ -101,7 +76,7 @@ const NamePromptModal = ({ open, onClose, onSubmit }: Props) => {
           <div className={styles.actions}>
             <button
               type="submit"
-              className={styles.primary}
+              className={styles.button}
               disabled={!name.trim()}
             >
               Continue

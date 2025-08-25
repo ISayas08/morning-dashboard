@@ -18,7 +18,7 @@ const apiRouteFetch = async <T, MT = T>(
   mapper: null | ((rawData: T) => MT) = null
 ): Promise<ErrorResponse | APIFetchResponse<T | MT>> => {
   try {
-    const requestConfig = config ?? { cache: "no-store" };
+    const requestConfig = config ?? {};
     const res = await fetch(url, requestConfig);
 
     if (!res.ok) {

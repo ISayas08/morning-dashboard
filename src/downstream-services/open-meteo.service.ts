@@ -89,7 +89,7 @@ export const fetchCurrentWeather = async (
 
   return apiRouteFetch<OpenMeteoResponse, OpenMeteoServiceResponse | null>(
     url,
-    null,
+    { cache: "no-store" },
     weatherDataMapper
   );
 };

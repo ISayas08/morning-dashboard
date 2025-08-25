@@ -1,19 +1,19 @@
+"use client";
 import React from "react";
-import styles from "./weather-card.module.scss";
-import { RainCategory } from "@lib/types";
 
-interface Props {
+import { OpenMeteoServiceResponse, RainCategory } from "@lib/types";
+import { weatherNowQuery } from "@queries/weather-pulling.queries";
+import WeatherCardSkeleton from "./weather-card-skeleton";
+
+import styles from "./weather-card.module.scss";
+
+interface WeatherProps {
+  cityName: string;
   isRenderingPhotos: boolean;
-  temp: number;
-  feelsLike: number;
-  windKph: number;
-  unit: "°C" | "°F";
-  isDay: boolean;
-  rainCategory: RainCategory;
-  city: string;
-  humidity: number;
-  pressure: number;
-  uvIndex: number;
+  lat: number;
+  lon: number;
+  timezone: string;
+  weatherInitialData?: OpenMeteoServiceResponse | null;
 }
 
 const conditionIcon = (rc: RainCategory, isDay: boolean) => {
@@ -24,19 +24,99 @@ const conditionIcon = (rc: RainCategory, isDay: boolean) => {
   return "thunderstorm";
 };
 
+const uvIndexCondition = (uvIndex: number): string => {
+  if (uvIndex <= 2) return "Low";
+  if (uvIndex <= 5) return "Moderate";
+  if (uvIndex <= 7) return "High";
+  if (uvIndex > 7) return "Very high";
+
+  return "";
+};
+
 export default function WeatherTriptych({
+  cityName,
   isRenderingPhotos,
-  temp,
-  feelsLike,
-  windKph,
-  unit,
-  isDay,
-  rainCategory,
-  city,
-  humidity,
-  pressure,
-  uvIndex,
-}: Props) {
+  lat,
+  lon,
+  timezone: tz,
+  weatherInitialData,
+}: WeatherProps) {
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { data: weather, isPending } = weatherNowQuery(
+    {
+      initialData: weatherInitialData,
+      lat,
+      lon,
+      tz,
+    },
+    isMounted
+  );
+
+  if (!weather && isPending)
+    return <WeatherCardSkeleton isRenderingPhotos={isRenderingPhotos} />;
+
+  const {
+    temp,
+    feelsLike,
+    windKph,
+    unit,
+    isDay,
+    rainCategory,
+    humidity,
+    pressure,
+    uvIndex,
+  } = weather;
+
+  const weatherItems = [
+    {
+      icon: "device_thermostat",
+      value: Math.round(temp),
+      unit: unit,
+      label: "Temperature",
+      help: `Feels like ${Math.round(feelsLike)}${unit}`,
+    },
+    {
+      icon: "air",
+      value: Math.round(windKph),
+      unit: "km/h",
+      label: "Wind",
+      help: cityName || "Outdoor",
+    },
+    {
+      icon: conditionIcon(rainCategory, isDay),
+      value: rainCategory,
+      unit: "",
+      label: "Condition",
+      help: isDay ? "Day" : "Night",
+    },
+    {
+      icon: "water_drop",
+      value: humidity,
+      unit: "%",
+      label: "Humidity",
+      help: cityName || "Outdoor",
+    },
+    {
+      icon: "compress",
+      value: pressure,
+      unit: "hPa",
+      label: "Pressure",
+      help: "Sea level",
+    },
+    {
+      icon: "wb_sunny",
+      value: uvIndex,
+      unit: "",
+      label: "UV Index",
+      help: uvIndexCondition(uvIndex),
+    },
+  ];
+
   return (
     <section
       className={styles.weather}
@@ -51,126 +131,30 @@ export default function WeatherTriptych({
         Your weather report
       </h2>
       <div className={styles.weatherContainer}>
-        <article className={styles.weatherItem}>
-          <div className={styles.weatherIconWrap} aria-hidden="true">
-            <span className={`${styles.weatherIcon} material-symbols-outlined`}>
-              device_thermostat
-            </span>
-          </div>
-          <div className={styles.weatherItemContent}>
-            <div className={styles.weatherValue}>
-              <span className={styles.weatherNumber}>{Math.round(temp)}</span>
-              <span className={styles.weatherUnit}>{unit}</span>
-            </div>
-            <div className={styles.weatherLabel}>Temperature</div>
-            <div className={styles.weatherHelp}>
-              Feels like {Math.round(feelsLike)}
-              {unit}
-            </div>
-          </div>
-        </article>
-
-        <article className={styles.weatherItem}>
-          <div className={styles.weatherIconWrap} aria-hidden="true">
-            <span className={`${styles.weatherIcon} material-symbols-outlined`}>
-              air
-            </span>
-          </div>
-          <div className={styles.weatherItemContent}>
-            <div className={styles.weatherValue}>
-              <span className={styles.weatherNumber}>
-                {Math.round(windKph)}
-              </span>
-              <span className={styles.weatherUnit}>km/h</span>
-            </div>
-            <div className={styles.weatherLabel}>Wind</div>
-            <div className={styles.weatherHelp}>{city || "Outdoor"}</div>
-          </div>
-        </article>
-
-        <article className={styles.weatherItem}>
-          <div className={styles.weatherIconWrap} aria-hidden="true">
-            <span className={`${styles.weatherIcon} material-symbols-outlined`}>
-              {conditionIcon(rainCategory, isDay)}
-            </span>
-          </div>
-          <div className={styles.weatherItemContent}>
-            <div className={styles.weatherValue}>
-              <span className={styles.weatherNumber}>
-                {
-                  (
-                    {
-                      clear: "Clear",
-                      drizzle: "Drizzle",
-                      rain: "Rain",
-                      showers: "Showers",
-                      storm: "Storm",
-                    } as const
-                  )[rainCategory]
-                }
+        {weatherItems.map((item) => (
+          <article
+            className={styles.weatherItem}
+            key={`${item.label}-${item.value}`}
+          >
+            <div className={styles.weatherIconWrap} aria-hidden="true">
+              <span
+                className={`${styles.weatherIcon} material-symbols-outlined`}
+              >
+                {item.icon}
               </span>
             </div>
-            <div className={styles.weatherLabel}>Condition</div>
-            <div className={styles.weatherHelp}>{isDay ? "Day" : "Night"}</div>
-          </div>
-        </article>
-
-        <article className={styles.weatherItem}>
-          <div className={styles.weatherIconWrap} aria-hidden="true">
-            <span className={`${styles.weatherIcon} material-symbols-outlined`}>
-              water_drop
-            </span>
-          </div>
-          <div className={styles.weatherItemContent}>
-            <div className={styles.weatherValue}>
-              <span className={styles.weatherNumber}>{humidity}</span>
-              <span className={styles.weatherUnit}>%</span>
+            <div className={styles.weatherItemContent}>
+              <div className={styles.weatherValue}>
+                <span className={styles.weatherNumber}>{item.value}</span>
+                {item.unit && (
+                  <span className={styles.weatherUnit}>{item.unit}</span>
+                )}
+              </div>
+              <div className={styles.weatherLabel}>{item.label}</div>
+              <div className={styles.weatherHelp}>{item.help}</div>
             </div>
-            <div className={styles.weatherLabel}>Humidity</div>
-            <div className={styles.weatherHelp}>{city || "Outdoor"}</div>
-          </div>
-        </article>
-
-        <article className={styles.weatherItem}>
-          <div className={styles.weatherIconWrap} aria-hidden="true">
-            <span className={`${styles.weatherIcon} material-symbols-outlined`}>
-              compress
-            </span>
-          </div>
-          <div className={styles.weatherItemContent}>
-            <div className={styles.weatherValue}>
-              <span className={styles.weatherNumber}>{pressure}</span>
-              <span className={styles.weatherUnit}>hPa</span>
-            </div>
-            <div className={styles.weatherLabel}>Pressure</div>
-            <div className={styles.weatherHelp}>Sea level</div>
-          </div>
-        </article>
-
-        <article className={styles.weatherItem}>
-          <div className={styles.weatherIconWrap} aria-hidden="true">
-            <span className={`${styles.weatherIcon} material-symbols-outlined`}>
-              wb_sunny
-            </span>
-          </div>
-          <div className={styles.weatherItemContent}>
-            <div className={styles.weatherValue}>
-              <span className={styles.weatherNumber}>{uvIndex}</span>
-            </div>
-            <div className={styles.weatherLabel}>UV Index</div>
-            <div className={styles.weatherHelp}>
-              {uvIndex != null
-                ? uvIndex <= 2
-                  ? "Low"
-                  : uvIndex <= 5
-                  ? "Moderate"
-                  : uvIndex <= 7
-                  ? "High"
-                  : "Very high"
-                : "Unavailable"}
-            </div>
-          </div>
-        </article>
+          </article>
+        ))}
       </div>
     </section>
   );
