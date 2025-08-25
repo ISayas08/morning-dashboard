@@ -12,15 +12,20 @@ export async function GET(req: Request) {
     return Response.json({ error: "invalid_coords" }, { status: 400 });
   }
 
-  const result = await fetchCurrentWeather({
+  const weatherRes = await fetchCurrentWeather({
     lat,
     lon,
     timeZone: timezone,
   });
 
-  if (!result.data) return new Response("Internal error", { status: 502 });
+  if ("isErrored" in weatherRes && weatherRes.isErrored) {
+    // log to monitoring tool (Sentry, Datadog, Splunk, etc) out of scope.
+    return new Response("Internal error", { status: 502 });
+  }
 
-  return Response.json(result.data, {
+  if (!weatherRes.data) return new Response("Internal error", { status: 502 });
+
+  return Response.json(weatherRes.data, {
     headers: {
       "Cache-Control": "public, s-maxage=60, stale-while-revalidate=600",
     },

@@ -3,6 +3,7 @@ import styles from "./weather-card.module.scss";
 import { RainCategory } from "@lib/types";
 
 interface Props {
+  isRenderingPhotos: boolean;
   temp: number;
   feelsLike: number;
   windKph: number;
@@ -24,6 +25,7 @@ const conditionIcon = (rc: RainCategory, isDay: boolean) => {
 };
 
 export default function WeatherTriptych({
+  isRenderingPhotos,
   temp,
   feelsLike,
   windKph,
@@ -36,7 +38,15 @@ export default function WeatherTriptych({
   uvIndex,
 }: Props) {
   return (
-    <section className={styles.weather} aria-label="Current weather">
+    <section
+      className={styles.weather}
+      aria-label="Current weather"
+      style={
+        {
+          marginTop: isRenderingPhotos ? 20 : 200,
+        } as React.CSSProperties
+      }
+    >
       <h2 id="weather-section" className={styles.weatherTitle}>
         Your weather report
       </h2>

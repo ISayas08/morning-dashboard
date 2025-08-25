@@ -1,14 +1,16 @@
-//@ts-ignore
-import { Agent, fetch } from "undici";
+import { Agent } from "undici";
 
-import { QUOTABLE_CONFIG } from "@lib/constants";
+import { QUOTABLE_CONFIG, SHOULD_RESPONSE_MOCKS } from "@lib/constants";
+import apiRouteFetch from "@lib/fetch-util";
+import { QuotableResponse } from "@lib/types";
+import { quotable_service_response_mock } from "./downstream-services.mock";
 
 type GetRandomInspirationalQuoteParams = {
   tags?: string;
   maxLength?: string;
 };
 
-export const runtime = "nodejs";
+
 
 const insecureAgent = new Agent({
   // WARNING: This disables SSL certificate validation.
@@ -18,10 +20,14 @@ const insecureAgent = new Agent({
   connect: { rejectUnauthorized: false },
 });
 
+export const QUOTABLE_RANDOM_ENDPOINT = "/random";
+
 export const fetchRandomInspirationalQuote = async (
   params?: GetRandomInspirationalQuoteParams
 ) => {
-  const quotableURL = new URL(`${QUOTABLE_CONFIG.url}/random`);
+  if (SHOULD_RESPONSE_MOCKS) return quotable_service_response_mock;
+
+  const quotableURL = new URL(QUOTABLE_RANDOM_ENDPOINT, QUOTABLE_CONFIG.url);
   quotableURL.searchParams.set(
     "tags",
     params?.tags ?? QUOTABLE_CONFIG.defaultTags
@@ -31,19 +37,8 @@ export const fetchRandomInspirationalQuote = async (
     String(params?.maxLength ?? QUOTABLE_CONFIG.defaultMaxLength)
   );
 
-  const res = await fetch(quotableURL, {
+  return apiRouteFetch<QuotableResponse>(quotableURL, {
     cache: "no-store",
     dispatcher: insecureAgent,
   });
-
-  if (!res.ok)
-    return {
-      data: null,
-      hasErrors: true,
-      error: new Error("Quotable Service | Fetch failed"),
-    };
-
-  return {
-    data: await res.json(),
-  };
 };

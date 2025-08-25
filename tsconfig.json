@@ -21,7 +21,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
-      "@services/*": ["./src/services/*"],
+      "@services/*": ["./src/downstream-services/*"],
       "@queries/*": ["./src/queries/*"],
       "@lib/*": ["./src/lib/*"]
     }
