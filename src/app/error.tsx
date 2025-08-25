@@ -19,8 +19,8 @@ export default function Error({
     <main className={styles.shell}>
       <div style={{ marginTop: "100px" }}>
         <h1>
-          Oops, the site's caught in a thunderstorm—please stand by for clearer
-          skies!
+          Oops, the site&apos;s caught in a thunderstorm—please stand by for
+          clearer skies!
         </h1>
         <button
           style={{ padding: "10px 20px", cursor: "pointer", marginTop: "15px" }}
