@@ -21,13 +21,22 @@ export default async function Home() {
     new URL("/api/quote", BASE_URL)
   );
 
-  const { data: location } = await apiRouteFetch<IPAPIResponse>(
+  const lres = await apiRouteFetch<IPAPIResponse>(
     new URL("/api/location", BASE_URL)
   );
 
+  console.error(lres);
+
+  const { data: location } = lres;
+
   if (!location) {
     // Forcing error boundary to appear
-    throw new Error("Failed to load location!");
+    throw new Error(
+      "Failed to load location! | " +
+        JSON.stringify(lres, null, 2) +
+        " | " +
+        JSON.stringify(location, null, 2)
+    );
   }
 
   const { data: initialWeather } =
