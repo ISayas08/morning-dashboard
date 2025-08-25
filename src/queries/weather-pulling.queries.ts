@@ -2,7 +2,7 @@ import { BASE_URL } from "@lib/constants";
 import { OpenMeteoServiceResponse } from "@lib/types";
 import { useQuery } from "@tanstack/react-query";
 
-export const weatherNowQuery = (
+export const useWeatherNowQuery = (
   {
     initialData,
     lat,

@@ -2,7 +2,7 @@
 import React from "react";
 
 import { OpenMeteoServiceResponse, RainCategory } from "@lib/types";
-import { weatherNowQuery } from "@queries/weather-pulling.queries";
+import { useWeatherNowQuery } from "@queries/weather-pulling.queries";
 import WeatherCardSkeleton from "./weather-card-skeleton";
 
 import styles from "./weather-card.module.scss";
@@ -47,7 +47,7 @@ export default function WeatherTriptych({
     setIsMounted(true);
   }, []);
 
-  const { data: weather, isPending } = weatherNowQuery(
+  const { data: weather, isPending } = useWeatherNowQuery(
     {
       initialData: weatherInitialData,
       lat,

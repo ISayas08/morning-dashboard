@@ -57,7 +57,7 @@ const NamePromptModal = ({ open, onClose, onSubmit }: Props) => {
         </button>
 
         <h2 id="name-modal-title" className={styles.title}>
-          What's your name?
+          What&apos;s your name?
         </h2>
 
         <form onSubmit={submit} className={styles.form}>
