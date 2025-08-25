@@ -22,27 +22,21 @@ export async function GET() {
     );
   }
 
-  try {
-    const ipAPIRes = await fetchGeoDataByIp(ip);
+  const ipAPIRes = await fetchGeoDataByIp(ip);
 
-    if (ipAPIRes.hasErrors) {
-      // log to monitoring tool (Sentry, Datadog, Splunk, etc) out of scope.
-      return new Response("Internal error", { status: 502 });
-    }
-
-    return Response.json(
-      { ...ipAPIRes.data, isPrivateIP: false },
-      {
-        headers: {
-          "Cache-Control":
-            "public, max-age=1800, s-maxage=1800, stale-while-revalidate=3600",
-          Vary: "x-forwarded-for",
-        },
-      }
-    );
-  } catch (err) {
-    // log to monitoring tool (sentry, DD etc) out of scope
-    console.log(err);
+  if ("isErrored" in ipAPIRes && ipAPIRes.isErrored) {
+    // log to monitoring tool (Sentry, Datadog, Splunk, etc) out of scope.
     return new Response("Internal error", { status: 502 });
   }
+
+  return Response.json(
+    { ...ipAPIRes.data, isPrivateIP: false },
+    {
+      headers: {
+        "Cache-Control":
+          "public, max-age=1800, s-maxage=1800, stale-while-revalidate=3600",
+        Vary: "x-forwarded-for",
+      },
+    }
+  );
 }

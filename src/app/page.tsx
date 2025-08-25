@@ -1,86 +1,77 @@
-import Header from "@components/header/header";
 import { BASE_URL } from "@lib/constants";
+import apiRouteFetch from "@lib/fetch-util";
 
-import styles from "./page.module.scss";
+import Header from "@components/header/header";
 import Quote from "@components/quote/quote";
+import LandmarkPhotos from "@components/landmark-photos/landmark-photos";
 import WeatherCard from "@components/weather-card/weather-card";
-import Timestamp from "@/components/timestamp/timestamp";
-export const revalidate = 0;
 
-const api = (path: string) =>
+import {
+  IPAPIResponse,
+  LandMarkPhoto,
+  OpenMeteoServiceResponse,
+  QuotableResponse,
+} from "@lib/types";
+import styles from "./page.module.scss";
+
+const api = async (path: string) =>
   fetch(new URL(path, BASE_URL), { cache: "no-store" });
 
+export const revalidate = 0;
+
 export default async function Home() {
-  const quote = await api("/api/quote").then((r) => (r.ok ? r.json() : null));
+  const { data: quote } = await apiRouteFetch<QuotableResponse>(
+    new URL("/api/quote", BASE_URL)
+  );
 
-  const geo = await api("/api/location").then((r) => (r.ok ? r.json() : null));
+  const { data: location } = await apiRouteFetch<IPAPIResponse>(
+    new URL("/api/location", BASE_URL)
+  );
 
-  const weather = geo
-    ? await api(
-        `/api/current-weather?lat=${geo.lat}&lon=${geo.lon}&timezone=${geo.timezone}`
-      ).then((r) => r.json())
-    : null;
+  if (!location) {
+    // Forcing error boundary to appear
+    throw new Error("Failed to load location!");
+  }
 
-  // const geo = {
-  //   status: "success",
-  //   country: "Canada",
-  //   countryCode: "CA",
-  //   region: "QC",
-  //   regionName: "Quebec",
-  //   city: "Montreal",
-  //   zip: "H1K",
-  //   lat: 45.6085,
-  //   lon: -73.5493,
-  //   timezone: "America/Toronto",
-  //   isp: "Le Groupe Videotron Ltee",
-  //   org: "Videotron Ltee",
-  //   as: "AS5769 Videotron Ltee",
-  //   query: "24.48.0.1",
-  //   isPrivateIP: false,
-  // };
+  const { data: weather } = await apiRouteFetch<OpenMeteoServiceResponse>(
+    new URL(
+      `/api/current-weather?lat=${location.lat}&lon=${location.lon}&timezone=${location.timezone}`,
+      BASE_URL
+    )
+  );
 
-  // const weather = {
-  //   temp: 28.3,
-  //   feelsLike: 27.7,
-  //   windKph: 6.3,
-  //   code: 0,
-  //   isDay: true,
-  //   unit: "°C",
-  //   rainCategory: "storm",
-  //   isRain: false,
-  // };
+  console.log({ weather });
 
-  // const quote = {
-  //   _id: "yvGg7FErS-y",
-  //   content: "Without courage, wisdom bears no fruit.",
-  //   author: "Baltasar Gracián",
-  //   tags: ["Famous Quotes", "Wisdom"],
-  //   authorSlug: "baltasar-gracian",
-  //   length: 39,
-  //   dateAdded: "2020-01-12",
-  //   dateModified: "2023-04-14",
-  // };
+  if (!weather) {
+    // Forcing error boundary to appear
+    throw new Error("Failed to load weather!");
+  }
+
+  const { data: landmarkPhotos } = await apiRouteFetch<LandMarkPhoto[]>(
+    new URL(`/api/landmark-photo?cityName=${location.city}`, BASE_URL)
+  );
 
   return (
     <main className={styles.shell}>
-      <Header
-        name={"Aloy"} // @TODO ask for user name and store it in localstorage
-        city={geo.city}
-        rainCategory={weather.rainCategory}
-      />
-      <Timestamp />
+      {<Header city={location?.city} rainCategory={weather?.rainCategory} />}
+
+      <LandmarkPhotos landmarkPhotos={landmarkPhotos} />
 
       <WeatherCard
+        isRenderingPhotos={!!landmarkPhotos?.length}
         temp={weather.temp}
         feelsLike={weather.feelsLike}
         windKph={weather.windKph}
         isDay={weather.isDay}
         unit="°C"
         rainCategory={weather.rainCategory}
-        city={geo.city}
+        city={location.city}
+        humidity={weather.humidity}
+        pressure={weather.pressure}
+        uvIndex={weather.uvIndex}
       />
 
-      <Quote text={quote.content} author={quote.author} />
+      {quote && <Quote text={quote.content} author={quote.author} />}
     </main>
   );
 }
