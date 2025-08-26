@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-
 import { BASE_URL, IP_API_CONFIG } from "@lib/constants";
 import apiRouteFetch from "@lib/fetch-util";
 
@@ -9,12 +8,12 @@ import LandmarkPhotos from "@components/landmark-photos/landmark-photos";
 import WeatherCard from "@components/weather-card/weather-card";
 
 import {
+  IPAPIResponse,
   LandMarkPhoto,
   OpenMeteoServiceResponse,
   QuotableResponse,
 } from "@lib/types";
 import styles from "./page.module.scss";
-import { fetchGeoDataByIp } from "@/downstream-services/ipAPI.service";
 
 export const revalidate = 0;
 
@@ -22,7 +21,6 @@ export default async function Home() {
   const { data: quote } = await apiRouteFetch<QuotableResponse>(
     new URL("/api/quote", BASE_URL)
   );
-
   const h = await headers();
   const ip =
     process.env.NODE_ENV === "development"
@@ -32,13 +30,12 @@ export default async function Home() {
         h.get("x-real-ip") ||
         "";
 
-  // Note: There is an API route for IP lookup, but calling it from the server resolves the IP as Vercel's server IP, not the user's actual IP.
-  const ipAPIRes = await fetchGeoDataByIp(ip);
-  const { data: location } = ipAPIRes;
+  const { data: location } = await apiRouteFetch<IPAPIResponse>(
+    new URL(`/api/location?ip=${ip}`, BASE_URL)
+  );
 
-  if (("isErrored" in ipAPIRes && ipAPIRes.isErrored) || !location) {
-    // log to monitoring tool (Sentry, Datadog, Splunk, etc) out of scope.
-    console.log({ ipAPIRes });
+  if (!location) {
+    // Forcing error boundary to appear
     throw new Error("Failed to load location!");
   }
 

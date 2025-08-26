@@ -1,18 +1,9 @@
-import { headers } from "next/headers";
-
 import { fetchGeoDataByIp } from "@services/ipAPI.service";
-import { IP_API_CONFIG, PRIVATE_IP_REGEX } from "@lib/constants";
+import { PRIVATE_IP_REGEX } from "@lib/constants";
 
-const isDev = process.env.NODE_ENV === "development";
-
-export async function GET() {
-  const h = await headers();
-  const ip = isDev
-    ? IP_API_CONFIG.defaultIP
-    : h.get("x-client-ip") ||
-      h.get("x-forwarded-for")?.split(",")[0].trim() ||
-      h.get("x-real-ip") ||
-      "";
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const ip = searchParams.get("ip") || "";
 
   const isPrivate = PRIVATE_IP_REGEX.test(ip);
 
