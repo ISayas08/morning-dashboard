@@ -22,10 +22,7 @@ export const useWeatherNowQuery = (
     queryKey: ["current-weather", lat, lon, tz ?? "auto"],
     queryFn: async () => {
       const res = await fetch(
-        new URL(
-          `/api/current-weather?lat=${lat}&lon=${lon}&timezone=${tz}`,
-          BASE_URL
-        ),
+        `/api/current-weather?lat=${lat}&lon=${lon}&timezone=${tz}`,
         { cache: "no-store" }
       );
 

@@ -40,7 +40,7 @@ export const UNSPLASH_CONFIG = {
 export const BASE_URL =
   process.env.BASE_URL ??
   (process.env.VERCEL_URL
-    ? `https://${process.env.BASE_URL}`
+    ? `https://${process.env.VERCEL_URL}`
     : `http://localhost:${process.env.PORT ?? 3000}`);
 
 export const MODAL_NAME_KEY = "MODAL_NAME_KEY";
