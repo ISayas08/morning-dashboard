@@ -28,7 +28,7 @@ export const useWeatherNowQuery = (
 
       return await res.json();
     },
-    initialData: initialDataAvailable ? initialData! : undefined,
+    initialData: initialDataAvailable ? initialData : undefined,
     initialDataUpdatedAt: initialDataAvailable ? Date.now() : undefined,
     enabled: isEnabled,
     staleTime: initialDataAvailable ? 5 * 60 * 1000 : 0,
